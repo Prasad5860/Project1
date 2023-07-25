@@ -1,0 +1,36 @@
+##############  Install nginx server in remote server ########
+
+
+- name: install nginx server
+  hosts: servers
+  become: true
+  tasks:
+   - name: install server
+     apt:
+      name: nginx
+      state: present
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+###############  Automate web application on remote servers #####
+
+
+- name: host static web application
+  hosts: servers
+  become: true
+  tasks:
+    - name: copy html file to remote server
+      copy:
+        src: /home/ubuntu/main.html
+        dest: /var/www/html/index.html
+      notify:
+        - Restart Nginx
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
